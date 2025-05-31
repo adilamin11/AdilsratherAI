@@ -1,3 +1,5 @@
+// server/index.js
+
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
@@ -13,47 +15,42 @@ const app = express();
 const port = process.env.PORT || 4001;
 const MONGO_URL = process.env.MONGO_URI;
 
-// Get allowed origins from env, split by comma
-const allowedOrigins = process.env.FRONTEND_URLS
-  ? process.env.FRONTEND_URLS.split(",")
-  : ["http://localhost:5173"];
+// ✅ CORRECT WAY to handle multiple origins
+const allowedOrigins = (process.env.FRONTEND_URLS || "")
+  .split(",")
+  .map(origin => origin.trim());
 
-// middleware
+console.log("✅ Allowed origins:", allowedOrigins); // <- DEBUG
+
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS setup with multiple allowed origins
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests with no origin like Postman or curl
-      if (!origin) return callback(null, true);
-
-      if (!allowedOrigins.includes(origin)) {
-        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
-        return callback(new Error(msg), false);
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS: " + origin));
       }
-      return callback(null, true);
     },
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// DB Connection
+// DB
 mongoose
   .connect(MONGO_URL)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((error) => {
-    console.error("MongoDB Connection Error:", error.message);
+  .then(() => console.log("✅ Connected to MongoDB"))
+  .catch((err) => {
+    console.error("MongoDB Connection Error:", err.message);
     process.exit(1);
   });
 
-// routes
+// Routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/AdilsAi", promptRoutes);
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`✅ Server running on port ${port}`);
 });
