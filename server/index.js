@@ -13,29 +13,41 @@ const app = express();
 const port = process.env.PORT || 4001;
 const MONGO_URL = process.env.MONGO_URI;
 
-// Use a fallback for local development (for CORS origin)
-const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+// Get allowed origins from env, split by comma
+const allowedOrigins = process.env.FRONTEND_URLS
+  ? process.env.FRONTEND_URLS.split(",")
+  : ["http://localhost:5173"];
 
 // middleware
 app.use(express.json());
 app.use(cookieParser());
 
-// CORS setup
+// CORS setup with multiple allowed origins
 app.use(
   cors({
-    origin: frontendUrl,
+    origin: function (origin, callback) {
+      // allow requests with no origin like Postman or curl
+      if (!origin) return callback(null, true);
+
+      if (!allowedOrigins.includes(origin)) {
+        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-// DB Connection Code
-mongoose.connect(MONGO_URL)
+// DB Connection
+mongoose
+  .connect(MONGO_URL)
   .then(() => console.log("Connected to MongoDB"))
   .catch((error) => {
     console.error("MongoDB Connection Error:", error.message);
-    process.exit(1); // Exit the process if connection fails
+    process.exit(1);
   });
 
 // routes
