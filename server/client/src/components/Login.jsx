@@ -25,7 +25,7 @@ function Login() {
     setError("");
     try {
       const { data } = await axios.post(
-        "http://localhost:1000/api/v1/user/login",
+        "https://adilsai.onrender.com/api/v1/user/login",
         {
           email: formData.email,
           password: formData.password,

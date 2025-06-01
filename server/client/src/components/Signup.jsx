@@ -25,7 +25,7 @@ function Signup() {
     setError("");
     try {
       const { data } = await axios.post(
-         "http://localhost:1000/api/v1/user/signup",
+         "https://adilsai.onrender.com/api/v1/user/signup",
         formData,
         { withCredentials: true }
       );

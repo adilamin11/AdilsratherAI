@@ -12,7 +12,7 @@ function Sidebar({ onClose, onNewChat }) {  // Added onNewChat prop
   const handleLogout = async () => {
     try {
       const { data } = await axios.get(
-        "http://localhost:1000/api/v1/user/logout",
+        "https://adilsai.onrender.com/api/v1/user/logout",
         { withCredentials: true }
       );
       localStorage.removeItem("user");
