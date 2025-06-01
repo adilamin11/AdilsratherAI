@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
-import { fileURLToPath } from "url";
 import userRoutes from "./routes/user.route.js";
 import promtRoutes from "./routes/prompt.route.js";
 
@@ -43,15 +42,15 @@ app.use("/api/v1/AdilsAi", promtRoutes);
 
 // Serve frontend in production
 if (process.env.NODE_ENV === "production") {
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = path.dirname(__filename);
-
-  app.use(express.static(path.join(__dirname, "./client/dist")));
-
-  app.get(" / ", (req, res) => {
-    res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
-  });
+ const dirPath =  path.resolve();
+ app.use(express.static("./client/dist"));
+ app.get("*",(req,res)=>{
+res.sendFile(path.resolve(dirPath,"./client/dist","index.html"));
+ })
 }
+ 
+  
+
 
 // Start server
 app.listen(port, () => {
