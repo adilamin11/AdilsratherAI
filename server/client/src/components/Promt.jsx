@@ -48,7 +48,7 @@ function Prompt() {
       const token = localStorage.getItem("token");
 
       const { data } = await axios.post(
-        "https://adilsai.onrender.com/api/v1/AdilsAi/Promt",
+        "http://localhost:1000/api/v1/AdilsAi/Promt",
         { content: trimmed },
         {
           headers: {
