@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "adilbackend": "file:..",
     "axios": "^1.9.0",
     "groq-sdk": "^0.21.0",
     "js-cookie": "^3.0.5",
